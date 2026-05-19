@@ -124,7 +124,8 @@ select:focus{outline:none;border-color:var(--accent)}
 .hist-del{border:none;background:transparent;color:var(--txt3);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:3px}
 .hist-del:hover{color:var(--det);background:rgba(220,38,38,.1)}
 .empty-st{text-align:center;padding:32px;color:var(--txt3);font-size:13px}
-@media(max-width:680px){.kpi-row{grid-template-columns:1fr 1fr}.month-grid{grid-template-columns:repeat(3,1fr)}.split-grid{grid-template-columns:1fr}.topbar,.nav,.tab{padding-left:14px;padding-right:14px}}
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(3,1fr) !important}}
+@media(max-width:680px){.kpi-row{grid-template-columns:1fr 1fr !important}.month-grid{grid-template-columns:repeat(3,1fr)}.split-grid{grid-template-columns:1fr}.topbar,.nav,.tab{padding-left:14px;padding-right:14px}}
 
 /* PASSWORD SCREEN */
 #pw-screen{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);padding:40px 20px}
@@ -203,10 +204,11 @@ select:focus{outline:none;border-color:var(--accent)}
       <button class="label-save" onclick="saveLabel()">Save</button>
       <span class="label-saved" id="label-saved">Saved ✓</span>
     </div>
-    <div class="kpi-row">
+    <div class="kpi-row" style="grid-template-columns:repeat(5,minmax(0,1fr))">
       <div class="kpi"><div class="kpi-lbl">Overall NPS</div><div class="kpi-val" id="kpi-nps" style="color:var(--pro)">—</div><div class="kpi-sub" id="kpi-period">—</div></div>
       <div class="kpi"><div class="kpi-lbl">Total responses</div><div class="kpi-val" id="kpi-total">—</div><div class="kpi-sub" id="kpi-months">—</div></div>
       <div class="kpi"><div class="kpi-lbl">Promoters</div><div class="kpi-val" id="kpi-pro" style="color:var(--pro)">—</div><div class="kpi-sub" id="kpi-pro-pct">—</div></div>
+      <div class="kpi"><div class="kpi-lbl">Passives</div><div class="kpi-val" id="kpi-pas" style="color:var(--pas)">—</div><div class="kpi-sub" id="kpi-pas-pct">—</div></div>
       <div class="kpi"><div class="kpi-lbl">Detractors</div><div class="kpi-val" id="kpi-det" style="color:var(--det)">—</div><div class="kpi-sub" id="kpi-det-pct">—</div></div>
     </div>
     <div class="card">
@@ -478,13 +480,15 @@ function buildDash(){
   const MONTH_IDX={January:1,February:2,March:3,April:4,May:5,June:6,July:7,August:8,September:9,October:10,November:11,December:12};
   function sortMonthKeys(keys){return keys.slice().sort((a,b)=>{const[am,ay]=a.split(' ');const[bm,by]=b.split(' ');return(+(ay||9999)*12+MONTH_IDX[am])-(+(by||9999)*12+MONTH_IDX[bm]);});}
   const months=sortMonthKeys(Object.keys(mo));
-  const tP=data.filter(d=>d.category==='Promoter').length,tD=data.filter(d=>d.category==='Detractor').length,tot=data.length;
+  const tP=data.filter(d=>d.category==='Promoter').length,tPa=data.filter(d=>d.category==='Passive').length,tD=data.filter(d=>d.category==='Detractor').length,tot=data.length;
   const onps=tot>0?Math.round((tP-tD)/tot*100):0;
   document.getElementById('kpi-nps').textContent=onps;
   document.getElementById('kpi-total').textContent=tot;
   document.getElementById('kpi-pro').textContent=tP;
+  document.getElementById('kpi-pas').textContent=tPa;
   document.getElementById('kpi-det').textContent=tD;
   document.getElementById('kpi-pro-pct').textContent=Math.round(tP/tot*100)+'% of total';
+  document.getElementById('kpi-pas-pct').textContent=Math.round(tPa/tot*100)+'% of total';
   document.getElementById('kpi-det-pct').textContent=Math.round(tD/tot*100)+'% of total';
   document.getElementById('kpi-period').textContent=months[0]+' – '+months[months.length-1];
   document.getElementById('kpi-months').textContent=months.length+' months tracked';
