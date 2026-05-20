@@ -124,8 +124,49 @@ select:focus{outline:none;border-color:var(--accent)}
 .hist-del{border:none;background:transparent;color:var(--txt3);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px;border-radius:3px}
 .hist-del:hover{color:var(--det);background:rgba(220,38,38,.1)}
 .empty-st{text-align:center;padding:32px;color:var(--txt3);font-size:13px}
-@media(max-width:900px){.kpi-row{grid-template-columns:repeat(3,1fr) !important}}
-@media(max-width:680px){.kpi-row{grid-template-columns:1fr 1fr !important}.month-grid{grid-template-columns:repeat(3,1fr)}.split-grid{grid-template-columns:1fr}.topbar,.nav,.tab{padding-left:14px;padding-right:14px}}
+
+/* ── MONTHLY LEADERBOARD ─────────────────────────────── */
+.mlb-mode-bar{display:flex;align-items:center;gap:0;margin-bottom:18px;background:var(--bg3);border:1px solid var(--bdr);border-radius:var(--r);padding:3px;width:fit-content}
+.mlb-mode-btn{padding:6px 16px;border:none;border-radius:4px;background:transparent;color:var(--txt2);cursor:pointer;font-size:12px;font-weight:500;font-family:'DM Sans',sans-serif;transition:all .15s}
+.mlb-mode-btn.active{background:var(--accent);color:#fff}
+.mlb-mode-btn:hover:not(.active){color:var(--txt)}
+
+/* Month winner carousel */
+.winner-strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:10px;margin-bottom:18px}
+.winner-card{background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl);padding:14px 16px;position:relative;overflow:hidden;transition:border-color .15s}
+.winner-card:hover{border-color:var(--bdr2)}
+.winner-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.winner-card.gold::before{background:linear-gradient(90deg,#f4c430,#ffd966)}
+.winner-card.silver::before{background:linear-gradient(90deg,#9e9e9e,#bdbdbd)}
+.winner-card.bronze::before{background:linear-gradient(90deg,#a06030,#c87941)}
+.winner-month{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txt3);margin-bottom:8px;font-weight:600}
+.winner-name{font-size:14px;font-weight:600;color:var(--txt);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.winner-team{font-size:10px;color:var(--txt3);margin-bottom:10px}
+.winner-stats{display:flex;gap:12px;align-items:center}
+.winner-nps{font-family:'DM Mono',monospace;font-size:22px;font-weight:300;line-height:1}
+.winner-pct{font-size:11px;color:var(--txt2)}
+.winner-crown{position:absolute;top:10px;right:12px;font-size:18px;opacity:.5}
+
+/* Monthly LB view */
+.mlb-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px;padding:12px 16px;background:var(--bg2);border:1px solid var(--bdr);border-radius:var(--rl)}
+.mlb-sep{width:1px;height:22px;background:var(--bdr2);margin:0 4px}
+.compare-active .compare-col-a{background:rgba(91,91,214,.05)}
+.compare-active .compare-col-b{background:rgba(232,121,90,.05)}
+
+/* delta badges */
+.delta{display:inline-flex;align-items:center;gap:2px;font-size:11px;font-family:'DM Mono',monospace;font-weight:500;padding:1px 5px;border-radius:3px}
+.delta-up{color:#34d399;background:rgba(15,155,110,.1)}
+.delta-dn{color:#f87171;background:rgba(220,38,38,.1)}
+.delta-nc{color:var(--txt3)}
+
+/* compare side-by-side */
+.compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.compare-grid .card-ttl span{display:inline-block;padding:2px 8px;border-radius:3px;font-size:9px}
+.col-a-pill{background:rgba(91,91,214,.15);color:#818cf8}
+.col-b-pill{background:rgba(232,121,90,.15);color:#e8795a}
+
+@media(max-width:900px){.kpi-row{grid-template-columns:repeat(3,1fr) !important}.compare-grid{grid-template-columns:1fr}}
+@media(max-width:680px){.kpi-row{grid-template-columns:1fr 1fr !important}.month-grid{grid-template-columns:repeat(3,1fr)}.split-grid{grid-template-columns:1fr}.topbar,.nav,.tab{padding-left:14px;padding-right:14px}.winner-strip{grid-template-columns:1fr 1fr}}
 
 /* PASSWORD SCREEN */
 #pw-screen{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);padding:40px 20px}
@@ -142,7 +183,6 @@ select:focus{outline:none;border-color:var(--accent)}
 </style>
 </head>
 <body>
-
 
 <div id="pw-screen">
   <div class="pw-box">
@@ -216,11 +256,11 @@ select:focus{outline:none;border-color:var(--accent)}
         <span class="card-ttl">NPS by team</span>
         <div class="legend"><span class="leg-item"><span class="leg-dot" style="background:var(--pro)"></span>Promoters</span><span class="leg-item"><span class="leg-dot" style="background:var(--pas)"></span>Passives</span><span class="leg-item"><span class="leg-dot" style="background:var(--det)"></span>Detractors</span></div>
       </div>
-      <div class="chart-wrap" id="tcw" style="height:280px"><canvas id="teamChart" role="img" aria-label="Team NPS">Team NPS breakdown</canvas></div>
+      <div class="chart-wrap" id="tcw" style="height:280px"><canvas id="teamChart"></canvas></div>
     </div>
     <div class="card">
       <div class="card-hd"><span class="card-ttl">Monthly NPS trend</span></div>
-      <div class="chart-wrap" style="height:200px"><canvas id="trendChart" role="img" aria-label="Monthly NPS trend">NPS trend</canvas></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="trendChart"></canvas></div>
     </div>
     <div class="card">
       <div class="card-hd"><span class="card-ttl">Consultant overview</span></div>
@@ -234,34 +274,127 @@ select:focus{outline:none;border-color:var(--accent)}
     <div class="month-detail" id="month-detail"></div>
     <div class="card">
       <div class="card-hd"><span class="card-ttl">Response volume by month</span></div>
-      <div class="chart-wrap" style="height:185px"><canvas id="volChart" role="img" aria-label="Monthly volume">Monthly volumes</canvas></div>
+      <div class="chart-wrap" style="height:185px"><canvas id="volChart"></canvas></div>
     </div>
     <div class="card">
       <div class="card-hd">
         <span class="card-ttl">Category breakdown by month</span>
         <div class="legend"><span class="leg-item"><span class="leg-dot" style="background:var(--pro)"></span>Promoters</span><span class="leg-item"><span class="leg-dot" style="background:var(--pas)"></span>Passives</span><span class="leg-item"><span class="leg-dot" style="background:var(--det)"></span>Detractors</span></div>
       </div>
-      <div class="chart-wrap" style="height:200px"><canvas id="stackChart" role="img" aria-label="Stacked monthly">Monthly stacked</canvas></div>
+      <div class="chart-wrap" style="height:200px"><canvas id="stackChart"></canvas></div>
     </div>
   </div>
 
   <!-- LEADERBOARD -->
   <div id="tab-leaderboard" class="tab">
-    <div class="filter-row">
-      <span class="fl">Sort by</span>
-      <select id="lb-sort" onchange="renderLB()"><option value="weighted">Weighted score (default)</option><option value="nps">Raw NPS</option><option value="pct">Promoter %</option><option value="total">Total responses</option><option value="p">Promoters</option></select>
-      <span class="fl">Team</span>
-      <select id="lb-team" onchange="renderLB()"><option value="all">All teams</option></select>
+
+    <!-- Mode toggle: All-time vs Monthly -->
+    <div class="mlb-mode-bar">
+      <button class="mlb-mode-btn active" id="lb-mode-alltime" onclick="setLBMode('alltime')">All time</button>
+      <button class="mlb-mode-btn" id="lb-mode-monthly" onclick="setLBMode('monthly')">Monthly view</button>
     </div>
-    <div class="card" style="margin-bottom:14px">
-      <div class="card-hd"><span class="card-ttl">Team leaderboard</span></div>
-      <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Team</th><th>NPS</th><th>Promoter %</th><th>Promoters</th><th>Passives</th><th>Detractors</th><th>Total</th></tr></thead><tbody id="team-lb"></tbody></table></div>
+
+    <!-- ── ALL-TIME VIEW ── -->
+    <div id="lb-alltime-view">
+      <div class="filter-row">
+        <span class="fl">Sort by</span>
+        <select id="lb-sort" onchange="renderLB()"><option value="weighted">Weighted score (default)</option><option value="nps">Raw NPS</option><option value="pct">Promoter %</option><option value="total">Total responses</option><option value="p">Promoters</option></select>
+        <span class="fl">Team</span>
+        <select id="lb-team" onchange="renderLB()"><option value="all">All teams</option></select>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hd"><span class="card-ttl">Team leaderboard</span></div>
+        <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Team</th><th>NPS</th><th>Promoter %</th><th>Promoters</th><th>Passives</th><th>Detractors</th><th>Total</th></tr></thead><tbody id="team-lb"></tbody></table></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><span class="card-ttl">Consultant leaderboard</span></div>
+        <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Consultant</th><th>Team</th><th>Score</th><th>Promoter %</th><th>Responses</th><th>Promoters</th><th>Passives</th><th>Detractors</th></tr></thead><tbody id="con-lb"></tbody></table></div>
+      </div>
     </div>
-    <div class="card">
-      <div class="card-hd"><span class="card-ttl">Consultant leaderboard</span></div>
-      <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Consultant</th><th>Team</th><th>Score</th><th>Promoter %</th><th>Responses</th><th>Promoters</th><th>Passives</th><th>Detractors</th></tr></thead><tbody id="con-lb"></tbody></table></div>
-    </div>
-  </div>
+
+    <!-- ── MONTHLY VIEW ── -->
+    <div id="lb-monthly-view" style="display:none">
+
+      <!-- Month winners carousel -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hd">
+          <span class="card-ttl">Monthly winners — consultant</span>
+          <span style="font-size:11px;color:var(--txt3)">Top performer per month by weighted score (min 5 responses)</span>
+        </div>
+        <div class="winner-strip" id="winner-strip"></div>
+      </div>
+
+      <!-- Month winners — team -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-hd">
+          <span class="card-ttl">Monthly winners — team</span>
+        </div>
+        <div class="winner-strip" id="winner-strip-team"></div>
+      </div>
+
+      <!-- Drill-down controls -->
+      <div class="mlb-controls">
+        <span class="fl">Month</span>
+        <select id="mlb-month-a" onchange="renderMLB()"><option value="">All time</option></select>
+        <div class="mlb-sep"></div>
+        <span class="fl">Compare with</span>
+        <select id="mlb-month-b" onchange="renderMLB()"><option value="">— none —</option></select>
+        <div class="mlb-sep"></div>
+        <span class="fl">Sort by</span>
+        <select id="mlb-sort" onchange="renderMLB()">
+          <option value="weighted">Weighted score</option>
+          <option value="nps">Raw NPS</option>
+          <option value="pct">Promoter %</option>
+          <option value="total">Total responses</option>
+        </select>
+        <div class="mlb-sep"></div>
+        <span class="fl">Team</span>
+        <select id="mlb-team" onchange="renderMLB()"><option value="all">All teams</option></select>
+      </div>
+
+      <!-- Single month or compare -->
+      <div id="mlb-single">
+        <div class="card" style="margin-bottom:14px">
+          <div class="card-hd"><span class="card-ttl" id="mlb-team-ttl">Team ranking</span></div>
+          <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Team</th><th>NPS</th><th>Promoter %</th><th>Responses</th><th>Promoters</th><th>Passives</th><th>Detractors</th></tr></thead><tbody id="mlb-team-tbl"></tbody></table></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><span class="card-ttl" id="mlb-con-ttl">Consultant ranking</span></div>
+          <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Consultant</th><th>Team</th><th>NPS</th><th>Promoter %</th><th>Responses</th><th>Promoters</th><th>Passives</th><th>Detractors</th></tr></thead><tbody id="mlb-con-tbl"></tbody></table></div>
+        </div>
+      </div>
+
+      <!-- Compare two months side by side -->
+      <div id="mlb-compare" style="display:none">
+        <div class="compare-grid">
+          <div class="card">
+            <div class="card-hd"><span class="card-ttl">Teams <span class="col-a-pill" id="cmp-team-a-lbl">Month A</span></span></div>
+            <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Team</th><th>NPS</th><th>Promoter %</th><th>Responses</th></tr></thead><tbody id="cmp-team-a"></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><span class="card-ttl">Teams <span class="col-b-pill" id="cmp-team-b-lbl">Month B</span></span></div>
+            <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Team</th><th>NPS</th><th>Promoter %</th><th>Responses</th></tr></thead><tbody id="cmp-team-b"></tbody></table></div>
+          </div>
+        </div>
+        <div class="compare-grid" style="margin-top:14px">
+          <div class="card">
+            <div class="card-hd"><span class="card-ttl">Consultants <span class="col-a-pill" id="cmp-con-a-lbl">Month A</span></span></div>
+            <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Consultant</th><th>Team</th><th>NPS</th><th>Promoter %</th><th>Responses</th></tr></thead><tbody id="cmp-con-a"></tbody></table></div>
+          </div>
+          <div class="card">
+            <div class="card-hd"><span class="card-ttl">Consultants <span class="col-b-pill" id="cmp-con-b-lbl">Month B</span></span></div>
+            <div class="tbl-scroll"><table><thead><tr><th>#</th><th>Consultant</th><th>Team</th><th>NPS</th><th>Promoter %</th><th>Responses</th></tr></thead><tbody id="cmp-con-b"></tbody></table></div>
+          </div>
+        </div>
+        <!-- Delta summary -->
+        <div class="card" style="margin-top:14px">
+          <div class="card-hd"><span class="card-ttl">NPS change — consultants</span><span style="font-size:11px;color:var(--txt3)">Only consultants present in both months</span></div>
+          <div class="tbl-scroll"><table><thead><tr><th>Consultant</th><th>Team</th><th id="cmp-delta-a-hd">Month A NPS</th><th id="cmp-delta-b-hd">Month B NPS</th><th>Change</th></tr></thead><tbody id="cmp-delta-tbl"></tbody></table></div>
+        </div>
+      </div>
+
+    </div><!-- /lb-monthly-view -->
+  </div><!-- /tab-leaderboard -->
 
   <!-- COMPARISON -->
   <div id="tab-comparison" class="tab">
@@ -274,7 +407,7 @@ select:focus{outline:none;border-color:var(--accent)}
         <span class="card-ttl">NPS trend — candidate vs client</span>
         <div class="legend"><span class="leg-item"><span class="leg-dot" style="background:#5b5bd6"></span>Candidates</span><span class="leg-item"><span class="leg-dot" style="background:#e8795a;border-radius:0"></span>Clients</span></div>
       </div>
-      <div class="chart-wrap" style="height:220px"><canvas id="compChart" role="img" aria-label="Candidate vs client NPS">Candidate vs client NPS</canvas></div>
+      <div class="chart-wrap" style="height:220px"><canvas id="compChart"></canvas></div>
     </div>
     <div class="card">
       <div class="card-hd"><span class="card-ttl">Consultant split</span></div>
@@ -298,6 +431,7 @@ const MM={1:'January',2:'February',3:'March',4:'April',5:'May',6:'June',7:'July'
 const JK=new Set(['','none','consultant','grand total','total','operations','operations ops','previous employee']);
 const SK='nps_uploads', LK='nps_label', TK='nps_theme', AK='nps_active';
 let CH={}, ST={};
+let LB_MODE='alltime'; // 'alltime' | 'monthly'
 
 /* THEME */
 function toggleTheme(){
@@ -319,9 +453,8 @@ dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')})
 dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
 dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer.files[0];if(f)handleFile(f)});
 
-
 /* PASSWORD */
-const PW_HASH='0ff592aca54a723cdd03f361a0f654ec7b90651542784ce591c398b40cab4e16'; 
+const PW_HASH='0ff592aca54a723cdd03f361a0f654ec7b90651542784ce591c398b40cab4e16';
 const PW_SESSION='nps_pw_ok';
 async function hashStr(s){const b=new TextEncoder().encode(s);const h=await crypto.subtle.digest('SHA-256',b);return Array.from(new Uint8Array(h)).map(x=>x.toString(16).padStart(2,'0')).join('');}
 async function checkPw(){
@@ -394,14 +527,12 @@ function parseRows(rows,rowsRaw){
     if(con.toLowerCase().includes('total'))continue;
     const score=parseFloat(row[si]);
     if(isNaN(score)||score<0||score>10)continue;
-    // Use raw row for reliable date extraction (SheetJS Date object or serial)
     const rawMonthCell = rowsRaw && rowsRaw[r] ? rowsRaw[r][mi] : null;
     let month='', year='';
     if(rawMonthCell instanceof Date){
       month=MM[rawMonthCell.getMonth()+1]||'';
       year=String(rawMonthCell.getFullYear());
     } else {
-      // Fallback: parse from formatted string
       const ms=String(row[mi]||'').trim();
       const d1=ms.match(/(\d{4})-(\d{2})/);
       const d2=ms.match(/^(\d{1,2})\//);
@@ -458,29 +589,58 @@ function activate(entry){
   renderHist();
 }
 
+/* ── COMPUTE ────────────────────────────────────────── */
 function compute(data){
   const mo={},te={},co={};
+  // per-consultant per-month breakdown
+  const coMo={}; // coMo[consultant][monthKey] = {p,pa,de,total}
   const nps=v=>v.total>0?Math.round((v.p-v.de)/v.total*100):null;
+
   data.forEach(d=>{
     const{consultant:c,team:t,month:m,type,category}=d;
     if(!mo[m])mo[m]={p:0,pa:0,de:0,total:0,cand:0,client:0};
     if(!te[t])te[t]={p:0,pa:0,de:0,total:0};
     if(!co[c])co[c]={team:t,p:0,pa:0,de:0,total:0,cand:0,client:0};
-    [mo[m],te[t],co[c]].forEach(o=>{o.total++;if(category==='Promoter')o.p++;else if(category==='Passive')o.pa++;else o.de++;});
+    // per-consultant-month
+    if(!coMo[c])coMo[c]={};
+    if(!coMo[c][m])coMo[c][m]={p:0,pa:0,de:0,total:0,team:t};
+
+    [mo[m],te[t],co[c],coMo[c][m]].forEach(o=>{o.total++;if(category==='Promoter')o.p++;else if(category==='Passive')o.pa++;else o.de++;});
     if(type==='Candidate'){mo[m].cand++;co[c].cand++;}else{mo[m].client++;co[c].client++;}
   });
+
   Object.values(mo).forEach(v=>v.nps=nps(v));
   Object.values(te).forEach(v=>v.nps=nps(v));
   Object.values(co).forEach(v=>v.nps=nps(v));
-  return{monthly:mo,teams:te,consultants:co};
+  // compute nps for each consultant-month
+  Object.values(coMo).forEach(mMap=>Object.values(mMap).forEach(v=>v.nps=nps(v)));
+
+  return{monthly:mo,teams:te,consultants:co,consultantMonthly:coMo};
 }
 
+/* ── SORT HELPERS ───────────────────────────────────── */
+const MONTH_IDX={January:1,February:2,March:3,April:4,May:5,June:6,July:7,August:8,September:9,October:10,November:11,December:12};
+function sortMonthKeys(keys){
+  return keys.slice().sort((a,b)=>{
+    const[am,ay]=a.split(' ');const[bm,by]=b.split(' ');
+    return(+(ay||9999)*12+MONTH_IDX[am])-(+(by||9999)*12+MONTH_IDX[bm]);
+  });
+}
+function weightedScore(d){
+  if(!d.total)return 0;
+  const pPct=d.p/d.total*100;
+  const vol=Math.min(Math.log(d.total)/Math.log(50),1);
+  return pPct*vol;
+}
+
+/* ── BUILD DASHBOARD ────────────────────────────────── */
 function buildDash(){
   const{data,analytics}=ST,{monthly:mo,teams:te,consultants:co}=analytics;
-  const MONTH_IDX={January:1,February:2,March:3,April:4,May:5,June:6,July:7,August:8,September:9,October:10,November:11,December:12};
-  function sortMonthKeys(keys){return keys.slice().sort((a,b)=>{const[am,ay]=a.split(' ');const[bm,by]=b.split(' ');return(+(ay||9999)*12+MONTH_IDX[am])-(+(by||9999)*12+MONTH_IDX[bm]);});}
   const months=sortMonthKeys(Object.keys(mo));
-  const tP=data.filter(d=>d.category==='Promoter').length,tPa=data.filter(d=>d.category==='Passive').length,tD=data.filter(d=>d.category==='Detractor').length,tot=data.length;
+  const tP=data.filter(d=>d.category==='Promoter').length;
+  const tPa=data.filter(d=>d.category==='Passive').length;
+  const tD=data.filter(d=>d.category==='Detractor').length;
+  const tot=data.length;
   const onps=tot>0?Math.round((tP-tD)/tot*100):0;
   document.getElementById('kpi-nps').textContent=onps;
   document.getElementById('kpi-total').textContent=tot;
@@ -496,11 +656,14 @@ function buildDash(){
   renderOvTable(co);
   renderMonthGrid(mo,months);
   buildLBFilter(co);
+  buildMLBFilter(months,co);
   renderLB();
+  renderMLBWinners(months);
+  renderMLB();
   renderComp(data,mo,months,co);
 }
 
-/* CHARTS */
+/* ── CHARTS ─────────────────────────────────────────── */
 function isDark(){return document.documentElement.getAttribute('data-theme')==='dark';}
 function gc(){return isDark()?'rgba(255,255,255,.05)':'rgba(0,0,0,.06)';}
 function tc(){return isDark()?'#c0c0d8':'#444455';}
@@ -510,8 +673,6 @@ function dc(id){if(CH[id]){CH[id].destroy();delete CH[id];}}
 
 function rebuildCharts(){
   const{analytics}=ST,{monthly:mo,teams:te}=analytics;
-  const MONTH_IDX={January:1,February:2,March:3,April:4,May:5,June:6,July:7,August:8,September:9,October:10,November:11,December:12};
-  function sortMonthKeys(keys){return keys.slice().sort((a,b)=>{const[am,ay]=a.split(' ');const[bm,by]=b.split(' ');return(+(ay||9999)*12+MONTH_IDX[am])-(+(by||9999)*12+MONTH_IDX[bm]);});}
   const months=sortMonthKeys(Object.keys(mo));
   rTeam(te);rTrend(mo,months);rVol(mo,months);rStack(mo,months);rComp(mo,months,ST.data);
 }
@@ -526,18 +687,15 @@ function rTeam(te){
     {label:'Detractors',data:s.map(e=>e[1].de),backgroundColor:'rgba(220,38,38,.65)',borderRadius:3}
   ]},options:{...GO,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{footer:items=>{const t=s[items[0].dataIndex][1];return`NPS: ${t.nps}  |  Total: ${t.total}`;}}}},scales:{x:{stacked:true,grid:{color:gc()},ticks:{color:tc(),font:TF}},y:{stacked:true,grid:{display:false},ticks:{color:tc(),font:TF}}}}});
 }
-
 function rTrend(mo,months){
   dc('trendChart');
   const bg=isDark()?'#0d0d0f':'#f4f4f2';
   CH.trendChart=new Chart(document.getElementById('trendChart'),{type:'line',data:{labels:months.map(m=>{const p=m.split(' ');return p[0].slice(0,3)+(p[1]?' \''+p[1].slice(2):'');}),datasets:[{label:'NPS',data:months.map(m=>mo[m].nps),borderColor:'#CB3DD1',backgroundColor:'rgba(203,61,209,.08)',borderWidth:2,pointRadius:5,pointBackgroundColor:'#CB3DD1',pointBorderColor:bg,pointBorderWidth:2,fill:true,tension:.35}]},options:{...GO,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`NPS: ${ctx.raw}`}}},scales:{y:{min:0,max:110,grid:{color:gc()},ticks:{color:tc(),font:TF}},x:{grid:{display:false},ticks:{color:tc(),font:TF,autoSkip:false,maxRotation:0}}}}});
 }
-
 function rVol(mo,months){
   dc('volChart');
   CH.volChart=new Chart(document.getElementById('volChart'),{type:'bar',data:{labels:months.map(m=>{const p=m.split(' ');return p[0].slice(0,3)+(p[1]?' \''+p[1].slice(2):'');}),datasets:[{label:'Responses',data:months.map(m=>mo[m].total),backgroundColor:'rgba(240,71,106,.7)',borderRadius:4,hoverBackgroundColor:'#F0476A'}]},options:{...GO,plugins:{legend:{display:false}},scales:{y:{grid:{color:gc()},ticks:{color:tc(),font:TF}},x:{grid:{display:false},ticks:{color:tc(),font:TF,autoSkip:false,maxRotation:0}}}}});
 }
-
 function rStack(mo,months){
   dc('stackChart');
   CH.stackChart=new Chart(document.getElementById('stackChart'),{type:'bar',data:{labels:months.map(m=>{const p=m.split(' ');return p[0].slice(0,3)+(p[1]?' \''+p[1].slice(2):'');}),datasets:[
@@ -546,7 +704,6 @@ function rStack(mo,months){
     {label:'Detractors',data:months.map(m=>mo[m].de),backgroundColor:'rgba(220,38,38,.6)',borderRadius:3}
   ]},options:{...GO,plugins:{legend:{display:false}},scales:{x:{stacked:true,grid:{display:false},ticks:{color:tc(),font:TF,autoSkip:false,maxRotation:0}},y:{stacked:true,grid:{color:gc()},ticks:{color:tc(),font:TF}}}}});
 }
-
 function rComp(mo,months,data){
   dc('compChart');
   const bg=isDark()?'#0d0d0f':'#f4f4f2';
@@ -561,16 +718,6 @@ function rComp(mo,months,data){
 /* BADGE / RANK */
 function badge(n){if(n===null||n===undefined)return'<span style="color:var(--txt2)">—</span>';const c=n>=80?'nb-hi':n>=60?'nb-md':'nb-lo';return`<span class="nb ${c}">${n}</span>`;}
 function rkCell(i){const c=i===0?'rk-1':i===1?'rk-2':i===2?'rk-3':'';return`<td class="rk ${c}">${i+1}</td>`;}
-
-/* WEIGHTED SCORE: promoter% weighted by log of response volume.
-   Gives fair credit for volume — 100% from 4 responses scores lower than 87% from 30. */
-function weightedScore(d){
-  if(!d.total)return 0;
-  const pPct=d.p/d.total*100;
-  // log scaling: ln(responses)/ln(max_reasonable=50), capped at 1
-  const vol=Math.min(Math.log(d.total)/Math.log(50),1);
-  return pPct*vol;
-}
 
 /* TABLES */
 function renderOvTable(co){
@@ -591,6 +738,16 @@ function showMDet(m,el){
   det.innerHTML=`<div class="card-hd" style="margin-bottom:14px"><span class="card-ttl">${m} — full breakdown</span></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px"><div class="kpi"><div class="kpi-lbl">Promoters</div><div class="kpi-val" style="color:var(--pro)">${d.p}</div><div class="kpi-sub">${pR}%</div></div><div class="kpi"><div class="kpi-lbl">Passives</div><div class="kpi-val" style="color:var(--pas)">${d.pa}</div><div class="kpi-sub">${paR}%</div></div><div class="kpi"><div class="kpi-lbl">Detractors</div><div class="kpi-val" style="color:var(--det)">${d.de}</div><div class="kpi-sub">${dR}%</div></div></div><div style="display:flex;gap:20px;font-size:13px;color:var(--txt2);flex-wrap:wrap"><span>Total: <strong style="color:var(--txt);font-family:'DM Mono',monospace">${d.total}</strong></span><span>Candidates: <strong style="color:var(--txt);font-family:'DM Mono',monospace">${d.cand}</strong></span><span>Clients: <strong style="color:var(--txt);font-family:'DM Mono',monospace">${d.client}</strong></span><span>NPS: ${badge(d.nps)}</span></div>`;
 }
 
+/* ── LEADERBOARD MODE TOGGLE ────────────────────────── */
+function setLBMode(mode){
+  LB_MODE=mode;
+  document.getElementById('lb-mode-alltime').classList.toggle('active',mode==='alltime');
+  document.getElementById('lb-mode-monthly').classList.toggle('active',mode==='monthly');
+  document.getElementById('lb-alltime-view').style.display=mode==='alltime'?'':'none';
+  document.getElementById('lb-monthly-view').style.display=mode==='monthly'?'':'none';
+}
+
+/* ── ALL-TIME LB ────────────────────────────────────── */
 function buildLBFilter(co){
   const sel=document.getElementById('lb-team');while(sel.options.length>1)sel.remove(1);
   [...new Set(Object.values(co).map(c=>c.team))].sort().forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});
@@ -599,20 +756,16 @@ function renderLB(){
   if(!ST.analytics)return;
   const{teams:te,consultants:co}=ST.analytics;
   const sort=document.getElementById('lb-sort').value,tf=document.getElementById('lb-team').value;
-
-  // Team leaderboard — teams have enough volume so raw NPS is fine
-  const tKey=sort==='p'?'p':sort==='total'?'total':sort==='pct'?null:'nps';
+  const tKey=sort==='p'?'p':sort==='total'?'total':'nps';
   const ts=Object.entries(te).sort((a,b)=>{
     if(sort==='pct'){const pa=a[1].total?a[1].p/a[1].total:0,pb=b[1].total?b[1].p/b[1].total:0;return pb-pa;}
-    if(sort==='weighted'){return weightedScore(b[1])-weightedScore(a[1]);}
+    if(sort==='weighted')return weightedScore(b[1])-weightedScore(a[1]);
     return b[1][tKey]-a[1][tKey];
   });
   document.getElementById('team-lb').innerHTML=ts.map(([n,d],i)=>{
     const pPct=d.total?Math.round(d.p/d.total*100):0;
     return`<tr>${rkCell(i)}<td style="font-weight:500">${n}</td><td>${badge(d.nps)}</td><td style="color:var(--pro);font-weight:500">${pPct}%</td><td style="color:var(--pro)">${d.p}</td><td style="color:var(--pas)">${d.pa}</td><td style="color:var(--det)">${d.de}</td><td>${d.total}</td></tr>`;
   }).join('');
-
-  // Consultant leaderboard
   let cs=Object.entries(co);
   if(tf!=='all')cs=cs.filter(([,d])=>d.team===tf);
   cs=cs.map(([n,d])=>[n,d,weightedScore(d)]);
@@ -627,19 +780,242 @@ function renderLB(){
   document.getElementById('con-lb').innerHTML=cs.map(([n,d,ws],i)=>{
     const pPct=d.total?Math.round(d.p/d.total*100):0;
     const lowVol=d.total<10;
-    return`<tr>
-      ${rkCell(i)}
-      <td style="font-weight:500">${n}${lowVol?` <span title="Fewer than 10 responses — ranking may not be representative" style="font-size:10px;color:var(--pas);cursor:help">⚠ low vol</span>`:''}</td>
-      <td style="font-size:10px;color:var(--txt2)">${d.team}</td>
-      <td>${badge(d.nps)}</td>
-      <td style="font-weight:500;color:var(--pro)">${pPct}%</td>
-      <td>${d.total}</td>
-      <td style="color:var(--pro)">${d.p}</td>
-      <td style="color:var(--det)">${d.de}</td>
-    </tr>`;
+    return`<tr>${rkCell(i)}<td style="font-weight:500">${n}${lowVol?` <span title="Fewer than 10 responses" style="font-size:10px;color:var(--pas);cursor:help">⚠ low vol</span>`:''}</td><td style="font-size:10px;color:var(--txt2)">${d.team}</td><td>${badge(d.nps)}</td><td style="font-weight:500;color:var(--pro)">${pPct}%</td><td>${d.total}</td><td style="color:var(--pro)">${d.p}</td><td style="color:var(--det)">${d.de}</td></tr>`;
   }).join('');
 }
 
+/* ── MONTHLY LB FILTERS ─────────────────────────────── */
+function buildMLBFilter(months, co){
+  // month dropdowns
+  ['mlb-month-a','mlb-month-b'].forEach((id,idx)=>{
+    const sel=document.getElementById(id);
+    while(sel.options.length>1)sel.remove(1);
+    months.forEach(m=>{
+      const o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o);
+    });
+    if(idx===1){/* month-b starts with none */}
+  });
+  // team filter
+  const sel=document.getElementById('mlb-team');while(sel.options.length>1)sel.remove(1);
+  [...new Set(Object.values(co).map(c=>c.team))].sort().forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;sel.appendChild(o);});
+}
+
+/* ── COMPUTE DATA FOR A GIVEN MONTH FILTER ──────────── */
+function getMonthlyLBData(monthKey, teamFilter){
+  const{consultantMonthly:coMo, consultants:coAll}=ST.analytics;
+  // Build per-consultant data for this month
+  const rows=[];
+  Object.entries(coMo).forEach(([name, mMap])=>{
+    const d=mMap[monthKey];
+    if(!d||!d.total)return;
+    const team=coAll[name]?.team||d.team||'—';
+    if(teamFilter!=='all'&&team!==teamFilter)return;
+    const pPct=Math.round(d.p/d.total*100);
+    const ws=weightedScore(d);
+    rows.push({name,team,p:d.p,pa:d.pa,de:d.de,total:d.total,nps:d.nps,pPct,ws});
+  });
+  return rows;
+}
+
+// Same but aggregated by team
+function getMonthlyTeamData(monthKey, teamFilter){
+  const{consultantMonthly:coMo, consultants:coAll}=ST.analytics;
+  const teamMap={};
+  Object.entries(coMo).forEach(([name, mMap])=>{
+    const d=mMap[monthKey];
+    if(!d||!d.total)return;
+    const team=coAll[name]?.team||d.team||'—';
+    if(teamFilter!=='all'&&team!==teamFilter)return;
+    if(!teamMap[team])teamMap[team]={p:0,pa:0,de:0,total:0};
+    teamMap[team].p+=d.p;teamMap[team].pa+=d.pa;teamMap[team].de+=d.de;teamMap[team].total+=d.total;
+  });
+  return Object.entries(teamMap).map(([team,d])=>({
+    team,p:d.p,pa:d.pa,de:d.de,total:d.total,
+    nps:d.total?Math.round((d.p-d.de)/d.total*100):null,
+    pPct:d.total?Math.round(d.p/d.total*100):0,
+    ws:weightedScore(d)
+  }));
+}
+
+function sortLBRows(rows, sort){
+  return rows.slice().sort((a,b)=>{
+    if(sort==='weighted')return b.ws-a.ws;
+    if(sort==='nps')return (b.nps??-999)-(a.nps??-999);
+    if(sort==='pct')return b.pPct-a.pPct;
+    if(sort==='total')return b.total-a.total;
+    return b.ws-a.ws;
+  });
+}
+
+/* ── RENDER MONTHLY WINNERS STRIP ───────────────────── */
+function renderMLBWinners(months){
+  const{consultantMonthly:coMo, consultants:coAll}=ST.analytics;
+  const crownEmoji=['👑','🥈','🥉'];
+  const medalClass=['gold','silver','bronze'];
+
+  // Consultant winners
+  const conStrip=document.getElementById('winner-strip');
+  conStrip.innerHTML=months.map(m=>{
+    // get all consultants in this month with >= 5 responses
+    const rows=[];
+    Object.entries(coMo).forEach(([name,mMap])=>{
+      const d=mMap[m];
+      if(!d||d.total<5)return;
+      rows.push({name,team:coAll[name]?.team||d.team||'—',nps:d.nps,pPct:Math.round(d.p/d.total*100),total:d.total,ws:weightedScore(d)});
+    });
+    if(!rows.length)return'';
+    rows.sort((a,b)=>b.ws-a.ws);
+    const w=rows[0];
+    const col=w.nps>=80?'var(--pro)':w.nps>=60?'var(--pas)':'var(--det)';
+    const [mName,mYear]=m.split(' ');
+    return`<div class="winner-card gold">
+      <div class="winner-crown">${crownEmoji[0]}</div>
+      <div class="winner-month">${mName}${mYear?' '+mYear:''}</div>
+      <div class="winner-name" title="${w.name}">${w.name}</div>
+      <div class="winner-team">${w.team}</div>
+      <div class="winner-stats">
+        <div class="winner-nps" style="color:${col}">${w.nps??'—'}</div>
+        <div class="winner-pct">${w.pPct}% promoters<br><span style="color:var(--txt3)">${w.total} responses</span></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Team winners
+  const teamStrip=document.getElementById('winner-strip-team');
+  teamStrip.innerHTML=months.map(m=>{
+    const rows=getMonthlyTeamData(m,'all');
+    if(!rows.length)return'';
+    rows.sort((a,b)=>b.ws-a.ws);
+    const w=rows[0];
+    const col=w.nps>=80?'var(--pro)':w.nps>=60?'var(--pas)':'var(--det)';
+    const [mName,mYear]=m.split(' ');
+    return`<div class="winner-card gold">
+      <div class="winner-crown">🏆</div>
+      <div class="winner-month">${mName}${mYear?' '+mYear:''}</div>
+      <div class="winner-name" title="${w.team}">${w.team}</div>
+      <div class="winner-team">${w.total} responses</div>
+      <div class="winner-stats">
+        <div class="winner-nps" style="color:${col}">${w.nps??'—'}</div>
+        <div class="winner-pct">${w.pPct}% promoters</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── RENDER MONTHLY LB DRILL-DOWN ───────────────────── */
+function renderMLB(){
+  if(!ST.analytics)return;
+  const mA=document.getElementById('mlb-month-a').value;
+  const mB=document.getElementById('mlb-month-b').value;
+  const sort=document.getElementById('mlb-sort').value;
+  const tf=document.getElementById('mlb-team').value;
+  const comparing=!!mB;
+
+  document.getElementById('mlb-single').style.display=comparing?'none':'';
+  document.getElementById('mlb-compare').style.display=comparing?'':'none';
+
+  if(comparing){
+    renderMLBCompare(mA||null,mB,sort,tf);
+  } else {
+    renderMLBSingle(mA||null,sort,tf);
+  }
+}
+
+function renderMLBSingle(monthKey, sort, tf){
+  const ttlSuffix=monthKey?` — ${monthKey}`:'';
+  document.getElementById('mlb-team-ttl').textContent='Team ranking'+ttlSuffix;
+  document.getElementById('mlb-con-ttl').textContent='Consultant ranking'+ttlSuffix;
+
+  // Team table
+  let teamRows;
+  if(monthKey){
+    teamRows=getMonthlyTeamData(monthKey,tf);
+  } else {
+    // All-time but use analytics.teams filtered by tf
+    const{teams:te}=ST.analytics;
+    teamRows=Object.entries(te)
+      .filter(([t])=>tf==='all'||t===tf)
+      .map(([team,d])=>({team,p:d.p,pa:d.pa,de:d.de,total:d.total,nps:d.nps,pPct:d.total?Math.round(d.p/d.total*100):0,ws:weightedScore(d)}));
+  }
+  teamRows=sortLBRows(teamRows,sort);
+  document.getElementById('mlb-team-tbl').innerHTML=teamRows.map((r,i)=>`<tr>${rkCell(i)}<td style="font-weight:500">${r.team}</td><td>${badge(r.nps)}</td><td style="color:var(--pro);font-weight:500">${r.pPct}%</td><td>${r.total}</td><td style="color:var(--pro)">${r.p}</td><td style="color:var(--pas)">${r.pa}</td><td style="color:var(--det)">${r.de}</td></tr>`).join('');
+
+  // Consultant table
+  let conRows;
+  if(monthKey){
+    conRows=getMonthlyLBData(monthKey,tf);
+  } else {
+    const{consultants:co}=ST.analytics;
+    conRows=Object.entries(co)
+      .filter(([,d])=>tf==='all'||d.team===tf)
+      .map(([name,d])=>({name,team:d.team,p:d.p,pa:d.pa,de:d.de,total:d.total,nps:d.nps,pPct:d.total?Math.round(d.p/d.total*100):0,ws:weightedScore(d)}));
+  }
+  conRows=sortLBRows(conRows,sort);
+  document.getElementById('mlb-con-tbl').innerHTML=conRows.map((r,i)=>{
+    const lowVol=r.total<5;
+    return`<tr>${rkCell(i)}<td style="font-weight:500">${r.name}${lowVol?` <span title="Fewer than 5 responses" style="font-size:10px;color:var(--pas);cursor:help">⚠</span>`:''}</td><td style="font-size:10px;color:var(--txt2)">${r.team}</td><td>${badge(r.nps)}</td><td style="color:var(--pro);font-weight:500">${r.pPct}%</td><td>${r.total}</td><td style="color:var(--pro)">${r.p}</td><td style="color:var(--pas)">${r.pa}</td><td style="color:var(--det)">${r.de}</td></tr>`;
+  }).join('');
+}
+
+function renderMLBCompare(mA, mB, sort, tf){
+  const lblA=mA||'All time', lblB=mB;
+  // update pills
+  ['cmp-team-a-lbl','cmp-con-a-lbl','cmp-delta-a-hd'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=lblA;});
+  ['cmp-team-b-lbl','cmp-con-b-lbl','cmp-delta-b-hd'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=lblB;});
+
+  function getTeam(mk){
+    if(!mk){
+      const{teams:te}=ST.analytics;
+      return sortLBRows(Object.entries(te).filter(([t])=>tf==='all'||t===tf).map(([team,d])=>({team,p:d.p,pa:d.pa,de:d.de,total:d.total,nps:d.nps,pPct:d.total?Math.round(d.p/d.total*100):0,ws:weightedScore(d)})),sort);
+    }
+    return sortLBRows(getMonthlyTeamData(mk,tf),sort);
+  }
+  function getCon(mk){
+    if(!mk){
+      const{consultants:co}=ST.analytics;
+      return sortLBRows(Object.entries(co).filter(([,d])=>tf==='all'||d.team===tf).map(([name,d])=>({name,team:d.team,p:d.p,pa:d.pa,de:d.de,total:d.total,nps:d.nps,pPct:d.total?Math.round(d.p/d.total*100):0,ws:weightedScore(d)})),sort);
+    }
+    return sortLBRows(getMonthlyLBData(mk,tf),sort);
+  }
+
+  const teamA=getTeam(mA), teamB=getTeam(mB);
+  const conA=getCon(mA), conB=getCon(mB);
+
+  function teamRows(rows){
+    return rows.map((r,i)=>`<tr>${rkCell(i)}<td style="font-weight:500">${r.team}</td><td>${badge(r.nps)}</td><td style="color:var(--pro);font-weight:500">${r.pPct}%</td><td>${r.total}</td></tr>`).join('');
+  }
+  function conRows(rows){
+    return rows.map((r,i)=>`<tr>${rkCell(i)}<td style="font-weight:500">${r.name}</td><td style="font-size:10px;color:var(--txt2)">${r.team}</td><td>${badge(r.nps)}</td><td style="color:var(--pro);font-weight:500">${r.pPct}%</td><td>${r.total}</td></tr>`).join('');
+  }
+  document.getElementById('cmp-team-a').innerHTML=teamRows(teamA);
+  document.getElementById('cmp-team-b').innerHTML=teamRows(teamB);
+  document.getElementById('cmp-con-a').innerHTML=conRows(conA);
+  document.getElementById('cmp-con-b').innerHTML=conRows(conB);
+
+  // Delta table — consultants in both months
+  const mapA=Object.fromEntries(conA.map(r=>[r.name,r]));
+  const mapB=Object.fromEntries(conB.map(r=>[r.name,r]));
+  const both=Object.keys(mapA).filter(n=>mapB[n]);
+  both.sort((a,b)=>{
+    const da=(mapA[a].nps??-999),db=(mapA[b].nps??-999);
+    const ea=(mapB[a].nps??-999),eb=(mapB[b].nps??-999);
+    return(ea-da)-(eb-db); // sort by improvement desc
+  });
+  document.getElementById('cmp-delta-tbl').innerHTML=both.map(name=>{
+    const a=mapA[name],b=mapB[name];
+    const aNps=a.nps??null,bNps=b.nps??null;
+    let deltaHtml='<span class="delta delta-nc">—</span>';
+    if(aNps!==null&&bNps!==null){
+      const diff=bNps-aNps;
+      if(diff>0)deltaHtml=`<span class="delta delta-up">▲ +${diff}</span>`;
+      else if(diff<0)deltaHtml=`<span class="delta delta-dn">▼ ${diff}</span>`;
+      else deltaHtml=`<span class="delta delta-nc">= 0</span>`;
+    }
+    return`<tr><td style="font-weight:500">${name}</td><td style="font-size:10px;color:var(--txt2)">${a.team}</td><td>${badge(aNps)}</td><td>${badge(bNps)}</td><td>${deltaHtml}</td></tr>`;
+  }).join('');
+}
+
+/* ── COMPARISON TAB ─────────────────────────────────── */
 function renderComp(data,mo,months,co){
   const ca=data.filter(d=>d.type==='Candidate'),cl=data.filter(d=>d.type==='Client');
   const fill=(pre,arr)=>{
@@ -660,7 +1036,7 @@ function renderComp(data,mo,months,co){
   }).join('');
 }
 
-/* HISTORY */
+/* ── HISTORY ────────────────────────────────────────── */
 function renderHist(){
   const ups=getUps();const aid=parseInt(localStorage.getItem(AK));
   const c=document.getElementById('hist-list');
@@ -673,7 +1049,7 @@ function renderHist(){
       <div style="flex:1">
         <div class="hist-name">${u.label||u.fileName}</div>
         <div class="hist-meta">${u.fileName} · ${ds} · ${u.data.length} rows</div>
-        <input class="hist-label-input" placeholder="Add a label to identify this upload…" value="${u.label||''}" onchange="updateLabel(${u.id},this.value);document.querySelector('#hi${u.id} .hist-name').textContent=this.value||'${u.fileName.replace(/'/g,"\\'")}'" onblur="renderHist()">
+        <input class="hist-label-input" placeholder="Add a label…" value="${u.label||''}" onchange="updateLabel(${u.id},this.value);document.querySelector('#hi${u.id} .hist-name').textContent=this.value||'${u.fileName.replace(/'/g,"\\'")}'" onblur="renderHist()">
       </div>
       <div class="hist-actions">
         ${!isAct?`<button class="hist-load" onclick="loadById(${u.id})">Load</button>`:'<span style="font-size:11px;color:var(--pro)">● Active</span>'}
@@ -684,7 +1060,7 @@ function renderHist(){
 }
 function loadById(id){const u=getUps().find(u=>u.id===id);if(u)activate(u);}
 
-/* LABEL */
+/* ── LABEL ──────────────────────────────────────────── */
 function saveLabel(){
   const v=document.getElementById('dash-label').value.trim();
   localStorage.setItem(LK,v);
@@ -694,7 +1070,7 @@ function saveLabel(){
   const s=document.getElementById('label-saved');s.style.opacity='1';setTimeout(()=>s.style.opacity='0',1800);
 }
 
-/* TAB */
+/* ── TAB ────────────────────────────────────────────── */
 function showTab(n,btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
